@@ -1,0 +1,54 @@
+// firebase_subscribe.js
+firebase.initializeApp({
+    messagingSenderId: '426199538884'
+});
+
+// браузер поддерживает уведомления
+// вообще, эту проверку должна делать библиотека Firebase, но она этого не делает
+if ('Notification' in window) {
+    var messaging = firebase.messaging();
+
+    messaging.onMessage(function(payload) {
+        console.log('Message received. ', payload);
+
+        // регистрируем пустой ServiceWorker каждый раз
+        navigator.serviceWorker.register('/firebase-messaging-sw.js');
+
+        // запрашиваем права на показ уведомлений если еще не получили их
+        Notification.requestPermission(function(permission) {
+            if (permission === 'granted') {
+                navigator.serviceWorker.ready.then(function(registration) {
+                    payload.notification.data = payload.notification; // параметры уведомления
+                    registration.showNotification(payload.notification.title, payload.notification);
+                }).catch(function(error) {
+                    showError('ServiceWorker registration failed', error);
+                });
+            }
+        });
+    });
+}
+
+function firebase_unsubscribe() {
+    // Delete Instance ID token.
+    messaging.getToken()
+        .then(function(currentToken) {
+            messaging.deleteToken(currentToken)
+                .then(function() {
+                    console.log('Токен удалён');
+                })
+                .catch(function(error) {
+                    showError('Не удалось удалить токен', error);
+                });
+        })
+        .catch(function(error) {
+            showError('Ошибка получения токена', error);
+        });
+}
+
+function showError(error, error_data) {
+    if (typeof error_data !== "undefined") {
+        console.error(error, error_data);
+    } else {
+        console.error(error);
+    }
+}
