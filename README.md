@@ -1,3 +1,6 @@
 # My-first-parser
-firsrt testing mobile site parser
-Look the  requrements.txt
+## First teasting mobile site parser
+## For using:
+```
+pip install -r requirements.xtx
+```
