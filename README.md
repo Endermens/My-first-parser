@@ -2,5 +2,5 @@
 ## First teasting mobile site parser
 ## For using:
 ```
-pip install -r requirements.xtx
+pip install -r requirements.txt
 ```
